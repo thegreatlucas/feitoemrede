@@ -33,8 +33,10 @@ export default function Privacidade() {
       </p>
       <h2>Cookies</h2>
       <p>
-        Utilizamos cookies de sessão para manter seu acesso. Esta versão não
-        inclui publicidade ou rastreadores de análise.
+        Utilizamos cookies de sessão para manter seu acesso e o Microsoft
+        Clarity para analisar a navegação e melhorar a experiência, incluindo
+        mapas de calor e gravações de sessão. O serviço pode utilizar cookies e
+        processar dados de interação com o site.
       </p>
     </main>
   );
