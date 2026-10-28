@@ -47,6 +47,12 @@ export default async function Painel({
               }[data.status as string] ?? data.status}
             </strong>
           </p>
+          {data.status === "pending" && (
+            <p>
+              Seu cadastro foi salvo. Ele ainda não aparece no Explorar porque
+              aguarda aprovação da moderação.
+            </p>
+          )}
           <p>{data.description}</p>
           <p>
             Você pode retirar o cadastro e enviar uma versão atualizada. A
