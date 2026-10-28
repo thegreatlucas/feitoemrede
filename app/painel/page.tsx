@@ -49,14 +49,19 @@ export default async function Painel({
           </p>
           {data.status === "pending" && (
             <p>
-              Seu cadastro foi salvo. Ele ainda não aparece no Explorar porque
-              aguarda aprovação da moderação.
+              Seu cadastro foi salvo e está aguardando a atualização da
+              publicação automática.
             </p>
           )}
           <p>{data.description}</p>
           <p>
-            Você pode retirar o cadastro e enviar uma versão atualizada. A
-            remoção é permanente.
+            <Link className="button" href="/cadastro">
+              Editar dados e contatos <Arrow />
+            </Link>
+          </p>
+          <p>
+            Você também pode remover o negócio do catálogo. A remoção é
+            permanente.
           </p>
           <form action={deleteBusiness}>
             <button className="button secondary">Remover meu cadastro</button>

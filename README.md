@@ -4,14 +4,14 @@ Uma plataforma para aproximar consumidores de empreendedores e fortalecer uma ec
 
 ## O que está implementado
 
-- Catálogo de negócios aprovados, busca textual e filtro por categoria.
+- Catálogo com publicação automática, busca por nome/cidade/descrição e filtro entre 24 categorias.
 - Login separado do cadastro, conta por e-mail e senha com Supabase Auth e sessão SSR, sem confirmação por e-mail.
 - Cadastro de um negócio por conta: nome, descrição, categoria, cidade, UF e site/rede social HTTPS opcional.
-- Consentimento de publicação, revisão antes de publicar e painel para acompanhar ou remover o negócio. Para corrigir os dados nesta versão, remova e cadastre novamente.
+- Consentimento de publicação automática, painel para editar dados/contatos e remover o negócio. WhatsApp, telefone, e-mail comercial, Instagram e site aparecem como links públicos no catálogo. Logo e foto da fachada podem ser enviados no cadastro ou depois pelo painel, e aparecem nos cartões do catálogo.
 - Moderação administrativa no dashboard Supabase, sem chave administrativa na aplicação.
 - Validação no servidor, proteção de ações do Next.js, políticas de acesso no banco (RLS) e cabeçalhos de segurança.
 
-Mapa, talentos/vagas, upload de imagens, denúncias internas, recuperação de senha e edição direta ainda não estão implementados. O catálogo usa paginação de 12 negócios por página; a busca por nome, descrição e cidade e o filtro por categoria são aplicados no banco a todos os cadastros aprovados. Não há dados fictícios exibidos como reais.
+Mapa, talentos/vagas, denúncias internas, recuperação de senha ainda não estão implementados. O catálogo usa paginação de 12 negócios por página; a busca por nome, descrição e cidade e o filtro por categoria são aplicados no banco a todos os cadastros aprovados. Não há dados fictícios exibidos como reais.
 
 ## Desenvolvimento
 
@@ -40,17 +40,17 @@ Os testes executam validação dos campos e a migração SQL em PostgreSQL embar
 
 1. Crie um projeto Supabase. Em **SQL Editor**, execute o conteúdo de `supabase/migrations/202610280001_businesses.sql` uma única vez, com uma conta administrativa. A migração cria a tabela, índices, privilégios e RLS. Não reaplique a migração sobre uma tabela existente sem planejar uma migração incremental.
 2. Copie a **Project URL** e a **Publishable key** para `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. Essas duas informações são públicas por definição; a proteção dos registros depende de RLS. Nunca use uma chave `service_role` ou secret key na aplicação.
-3. Aplique também a nova migração `supabase/migrations/202610280002_signup_business.sql`. Ela bloqueia INSERT direto na tabela (inclusive autenticado) e cria um trigger do Auth que valida e registra a empresa com proprietário fixado pela identidade do usuário. Não reaplique a primeira migração.
+3. Aplique também a nova migração `supabase/migrations/202610280002_signup_business.sql`. Ela bloqueia INSERT direto na tabela (inclusive autenticado) e cria um trigger do Auth que valida e registra a empresa com proprietário fixado pela identidade do usuário. Aplique em seguida `supabase/migrations/202610280003_discovery_autoapproval.sql` para contatos, novas categorias, edição e publicação automática. Ela publica os cadastros pendentes e preserva os rejeitados. Não reaplique as migrações anteriores em bancos já atualizados.
 4. Em **Authentication → Sign In / Providers → Email**, **desative Confirm email**. Configure uma política de senhas de pelo menos 10 caracteres. Esse controle é do projeto remoto; não pode ser desligado apenas pelo código do site. Contas antigas ainda não confirmadas podem precisar ser confirmadas manualmente pelo operador após verificar a solicitação.
-5. O cadastro agora segue: dados da empresa → e-mail e senha → criação da conta e acesso automático ao painel. Os dados são enviados como rascunho do Auth; o banco cadastra a empresa automaticamente. A publicação no catálogo continua sujeita à moderação.
+5. O cadastro agora segue: dados da empresa → e-mail e senha → criação da conta e acesso automático ao painel. Os dados são enviados como rascunho do Auth; o banco cadastra a empresa automaticamente. A publicação no catálogo é automática; a moderação pode rejeitar cadastros que violem as regras.
 6. Enquanto o projeto remoto ainda exigir confirmação, a aplicação não cria novas contas por esse fluxo e mostra uma mensagem temporária. Assim não deixa a pessoa presa a um link de confirmação.
-7. Faça um teste real com uma conta sua: cadastrar empresa e acesso → entrar automaticamente no painel → sair → entrar pelo login → aprovar pelo dashboard → verificar no catálogo → remover no painel. Não use contas ou e-mails de terceiros.
+7. Faça um teste real com uma conta sua: cadastrar empresa e acesso → entrar automaticamente no painel → sair → entrar pelo login → verificar a publicação automática no catálogo → remover no painel. Não use contas ou e-mails de terceiros.
 
 A nova migração impede gravação direta na tabela; as APIs públicas de autenticação do Supabase continuam funcionando. Nenhum site pode impedir todas as requisições HTTP, pois o próprio formulário depende delas. Server Actions validam os dados no servidor e aplicam a proteção de origem do Next.js; o campo oculto do formulário descarta automações simples e não substitui CAPTCHA ou limites do provedor. Não é usada uma chave administrativa no navegador ou no fluxo de cadastro.
 
 ### Moderação
 
-No **Table Editor → businesses**, revise os cadastros com `status = pending` e altere para `approved` ou `rejected`. Apenas operadores com acesso administrativo ao projeto fazem essa alteração. Usuários da aplicação não têm permissão para alterar status, identidade do proprietário ou datas. Por enquanto, a conta tem um único negócio; não publique conteúdo discriminatório, fraudulento ou informações pessoais desnecessárias.
+Os novos cadastros são publicados automaticamente. No **Table Editor → businesses**, operadores administrativos podem alterar `status` para `rejected` para retirar um negócio do catálogo. Cadastros rejeitados não voltam a ser públicos ao editar seus contatos. Proprietário, status e datas não são definidos pelo formulário. Cada conta possui um único negócio, editável pelo painel. A migração de aprovação automática libera registros pendentes, preservando os rejeitados.
 
 ## Publicar na Vercel
 
@@ -76,3 +76,9 @@ O arquivo `vercel.json` fixa o framework Next.js, o comando `npm run build` e a 
 ### Configuração pública incluída no deploy
 
 `vercel.json` fornece a URL e a chave **anon** deste projeto tanto ao build quanto às funções da Vercel. Esses identificadores são públicos por definição e não concedem acesso administrativo: a autorização continua nas políticas RLS do Supabase. Nenhuma chave `service_role` ou secret key deve ser adicionada a esse arquivo. Ao trocar de projeto, atualize as duas configurações (`env` e `build.env`) juntas. As credenciais pessoais e administrativas continuam fora do Git.
+
+## Imagens do negócio
+
+A migração `202610280004_business_images.sql` cria o bucket público `business-images`, as colunas de imagem e as regras de escrita por proprietário. Aplique depois das migrações 001, 002 e 003 em um projeto novo; não reaplique as já instaladas. Cada conta pode enviar logo e fachada em JPG, PNG ou WebP de até 1,5 MB e 16 megapixels por arquivo. O servidor valida os bytes, reduz dimensões, converte para WebP e remove metadados. SVG e animações são recusados. O limite do formulário é 4 MB, mantendo a soma dos dois arquivos abaixo do limite da Vercel.
+
+Os caminhos são gerados pelo servidor, vinculados ao UUID do proprietário e validados no banco. Apenas o proprietário autenticado pode gravar ou remover arquivos na própria pasta; a leitura das imagens é pública por consentimento. O painel permite substituir/remover fotos e editar os contatos. Não são usadas chaves administrativas no upload.

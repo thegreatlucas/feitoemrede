@@ -1,4 +1,10 @@
 "use server";
+import {
+  prepareImages,
+  uploadImages,
+  removeImages,
+  type ImagePaths,
+} from "@/lib/business-images";
 import { redirect } from "next/navigation";
 import { persistBusiness } from "@/lib/business-registration";
 import { publicSupabaseKey } from "@/lib/supabase/config";
@@ -26,7 +32,7 @@ export async function authenticate(form: FormData) {
   if (error)
     message(
       "/entrar",
-      "Não foi possível entrar. Verifique suas credenciais e a confirmação do e-mail.",
+      "Não foi possível entrar. Verifique seu e-mail e sua senha.",
     );
   redirect("/painel");
 }
@@ -52,11 +58,50 @@ export async function createBusiness(form: FormData) {
     data: { user },
   } = await db.auth.getUser();
   if (!user) redirect("/entrar");
-  if (!(await persistBusiness(db, user.id, parsed.data)))
+  const { data: previousData, error: previousError } = await db
+    .from("businesses")
+    .select("logo_path,facade_path")
+    .eq("owner_id", user.id)
+    .maybeSingle();
+  if (previousError)
     message(
       "/cadastro",
-      "Não foi possível ativar o negócio agora. Seus dados foram guardados; tente novamente em instantes.",
+      "Não foi possível carregar as imagens atuais. Tente novamente.",
     );
+  const previous = previousData ?? {};
+  let images: Awaited<ReturnType<typeof uploadImages>>;
+  try {
+    images = await uploadImages(
+      db,
+      user.id,
+      await prepareImages(form),
+      previous,
+      form,
+    );
+  } catch (error) {
+    message(
+      "/cadastro",
+      error instanceof Error
+        ? error.message
+        : "Não foi possível enviar as imagens.",
+    );
+  }
+  if (
+    !(await persistBusiness(db, user.id, { ...parsed.data, ...images.paths }))
+  )
+    message(
+      "/cadastro",
+      "Não foi possível salvar agora. Tente novamente em instantes.",
+    );
+  try {
+    await removeImages(db, images.obsolete);
+  } catch {
+    message(
+      "/cadastro",
+      "Dados salvos. Não foi possível remover uma imagem antiga; tente novamente em instantes.",
+    );
+  }
+  revalidatePath("/");
   revalidatePath("/painel");
   redirect("/painel");
 }
@@ -66,6 +111,28 @@ export async function deleteBusiness() {
     data: { user },
   } = await db.auth.getUser();
   if (!user) redirect("/entrar");
+  const previous = (
+    await db
+      .from("businesses")
+      .select("logo_path,facade_path")
+      .eq("owner_id", user.id)
+      .maybeSingle()
+  ).data;
+  if (previous)
+    try {
+      await removeImages(
+        db,
+        Object.values(previous).filter(
+          (path): path is string =>
+            typeof path === "string" && path.startsWith(user.id + "/"),
+        ),
+      );
+    } catch {
+      message(
+        "/painel",
+        "Não foi possível remover as imagens. Tente novamente.",
+      );
+    }
   const { error } = await db
     .from("businesses")
     .delete()
@@ -93,6 +160,10 @@ export async function registerBusiness(
     "website",
     "email",
     "consent",
+    "phone",
+    "whatsapp",
+    "contact_email",
+    "instagram",
   ])
     values[key] = String(form.get(key) ?? "").slice(0, 1000);
   const fail = (message: string): RegistrationState => ({ message, values });
@@ -131,6 +202,14 @@ export async function registerBusiness(
       "O cadastro está temporariamente indisponível. Seus dados continuam preenchidos.",
     );
   }
+  let prepared: Awaited<ReturnType<typeof prepareImages>>;
+  try {
+    prepared = await prepareImages(form);
+  } catch (error) {
+    return fail(
+      error instanceof Error ? error.message : "Revise as imagens enviadas.",
+    );
+  }
   const { email, password, passwordConfirmation, ...business } = parsed.data;
   void passwordConfirmation;
   const db = await supabase();
@@ -143,13 +222,25 @@ export async function registerBusiness(
     return fail(
       "Não foi possível concluir agora. Se você já tem conta, entre pela página de login. Caso contrário, tente novamente em alguns instantes.",
     );
-  if (!(await persistBusiness(db, data.user.id, business)))
+  let paths: ImagePaths = { logo_path: "", facade_path: "" };
+  try {
+    paths = (await uploadImages(db, data.user.id, prepared, {}, form)).paths;
+  } catch {
     redirect(
       "/cadastro?message=" +
         encodeURIComponent(
-          "Sua conta foi criada e seus dados foram guardados. Tente salvar o negócio novamente.",
+          "Sua conta e os dados do negócio foram salvos. Não foi possível enviar as imagens; tente novamente.",
         ),
     );
+  }
+  if (!(await persistBusiness(db, data.user.id, { ...business, ...paths })))
+    redirect(
+      "/cadastro?message=" +
+        encodeURIComponent(
+          "Sua conta foi criada. Tente salvar o negócio novamente.",
+        ),
+    );
+  revalidatePath("/");
   revalidatePath("/painel");
   redirect("/painel");
 }

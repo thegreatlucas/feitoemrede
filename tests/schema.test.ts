@@ -53,3 +53,27 @@ test("signup requires valid business data and matching passwords", async () => {
   );
   assert.equal(signupSchema.safeParse({ ...signup, name: "" }).success, false);
 });
+
+test("normalizes public Brazilian contacts without using the login email", () => {
+  const parsed = businessSchema.parse({
+    ...valid,
+    phone: "(81) 3333-4444",
+    whatsapp: "(81) 99999-8888",
+    instagram: "@cafecoletivo",
+    contact_email: "contato@example.com",
+  });
+  assert.equal(parsed.phone, "+558133334444");
+  assert.equal(parsed.whatsapp, "+5581999998888");
+  assert.equal(parsed.instagram, "cafecoletivo");
+  assert.equal(
+    businessSchema.safeParse({ ...valid, phone: "123" }).success,
+    false,
+  );
+  assert.equal(
+    businessSchema.safeParse({
+      ...valid,
+      instagram: "https://instagram.com/teste",
+    }).success,
+    false,
+  );
+});

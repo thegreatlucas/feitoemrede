@@ -15,7 +15,12 @@ export function RegistrationForm() {
         <li aria-current={step === 1 ? "step" : undefined}>02 · Sua conta</li>
         <li>03 · Pronto para participar</li>
       </ol>
-      <form ref={form} action={action} className="form-stack">
+      <form
+        ref={form}
+        action={action}
+        className="form-stack"
+        onReset={(event) => event.preventDefault()}
+      >
         {state.message && (
           <div className="notice" role="alert">
             {state.message}

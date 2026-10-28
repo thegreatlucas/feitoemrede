@@ -1,3 +1,5 @@
+import { businessImageUrl } from "@/lib/image-url";
+import { contactLinks, type BusinessContacts } from "@/lib/contact-links";
 import { Arrow, Burst } from "@/components/icons";
 import Link from "next/link";
 import { configured, supabase } from "@/lib/supabase/server";
@@ -17,7 +19,7 @@ export default async function Home({
   );
   const pageSize = 12;
   let total = 0;
-  let businesses: {
+  let businesses: (BusinessContacts & {
     id: string;
     name: string;
     description: string;
@@ -25,15 +27,20 @@ export default async function Home({
     city: string;
     state: string;
     website: string | null;
-  }[] = [];
+    logo_path: string;
+    facade_path: string;
+  })[] = [];
   let failed = false;
   if (configured()) {
     const db = await supabase();
     let query = db
       .from("businesses")
-      .select("id,name,description,category,city,state,website", {
-        count: "exact",
-      })
+      .select(
+        "id,name,description,category,city,state,website,phone,whatsapp,contact_email,instagram,logo_path,facade_path",
+        {
+          count: "exact",
+        },
+      )
       .eq("status", "approved")
       .order("created_at", { ascending: false })
       .order("id")
@@ -178,7 +185,24 @@ export default async function Home({
             {filtered.map((b, i) => (
               <article className="card" key={b.id}>
                 <div className={`card-art art-${i % 3}`}>
-                  <span>{b.name.charAt(0)}</span>
+                  {businessImageUrl(b.facade_path) ? (
+                    <img
+                      className="facade-photo"
+                      src={businessImageUrl(b.facade_path)!}
+                      alt={`Fachada de ${b.name}`}
+                      loading="lazy"
+                    />
+                  ) : (
+                    <span>{b.name.charAt(0)}</span>
+                  )}
+                  {businessImageUrl(b.logo_path) && (
+                    <img
+                      className="business-logo"
+                      src={businessImageUrl(b.logo_path)!}
+                      alt={`Logo de ${b.name}`}
+                      loading="lazy"
+                    />
+                  )}
                   <small>{b.category}</small>
                 </div>
                 <div className="card-content">
@@ -187,15 +211,18 @@ export default async function Home({
                   </div>
                   <h3>{b.name}</h3>
                   <p>{b.description}</p>
-                  {b.website && (
-                    <a
-                      href={b.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Conheça o negócio <Arrow />
-                    </a>
-                  )}
+                  <div className="contact-links">
+                    {contactLinks(b).map((link) => (
+                      <a
+                        key={link.label}
+                        href={link.href}
+                        target={link.external ? "_blank" : undefined}
+                        rel={link.external ? "noopener noreferrer" : undefined}
+                      >
+                        {link.label} <Arrow />
+                      </a>
+                    ))}
+                  </div>
                 </div>
               </article>
             ))}
@@ -216,7 +243,7 @@ export default async function Home({
               <p>
                 {failed
                   ? "Tente novamente em alguns instantes."
-                  : "Os cadastros aprovados aparecem aqui. Seu negócio pode abrir esse caminho."}
+                  : "Seu negócio pode abrir esse caminho. Cadastre-se para aparecer na rede."}
               </p>
               <Link href="/cadastro" className="text-link">
                 Cadastre seu negócio <Arrow />

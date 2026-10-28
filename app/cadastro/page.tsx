@@ -14,7 +14,19 @@ export default async function Cadastro({
   const { message } = await searchParams;
   const db = configured() ? await supabase() : null;
   const user = db ? (await db.auth.getUser()).data.user : null;
-  const draft = user?.user_metadata?.business_draft;
+  const existing =
+    user && db
+      ? (
+          await db
+            .from("businesses")
+            .select(
+              "name,description,category,city,state,website,phone,whatsapp,contact_email,instagram,logo_path,facade_path",
+            )
+            .eq("owner_id", user.id)
+            .maybeSingle()
+        ).data
+      : null;
+  const draft = existing ?? user?.user_metadata?.business_draft;
   const defaults: BusinessDefaults = {};
   if (draft && typeof draft === "object")
     for (const key of [
@@ -24,6 +36,12 @@ export default async function Cadastro({
       "city",
       "state",
       "website",
+      "phone",
+      "whatsapp",
+      "contact_email",
+      "instagram",
+      "logo_path",
+      "facade_path",
     ] as const)
       if (typeof draft[key] === "string") defaults[key] = draft[key];
   return (
@@ -38,7 +56,7 @@ export default async function Cadastro({
         {user
           ? "Apresente sua empresa para a comunidade."
           : "Primeiro, conte sobre seu negócio. Depois crie seu acesso e entre no painel, sem confirmação por e-mail."}{" "}
-        Os cadastros passam por análise antes de aparecer na rede.
+        Ao concluir, seu negócio aparece automaticamente no Explorar.
       </p>
       {message && (
         <div className="notice" role="status">
