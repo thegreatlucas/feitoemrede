@@ -5,6 +5,7 @@ import {
   removeImages,
   type ImagePaths,
 } from "@/lib/business-images";
+import { safeReturnTo } from "@/lib/talent-schema";
 import { redirect } from "next/navigation";
 import { persistBusiness } from "@/lib/business-registration";
 import { publicSupabaseKey } from "@/lib/supabase/config";
@@ -34,11 +35,13 @@ export async function authenticate(form: FormData) {
       "/entrar",
       "Não foi possível entrar. Verifique seu e-mail e sua senha.",
     );
-  redirect("/painel");
+  revalidatePath("/", "layout");
+  redirect(safeReturnTo(form.get("next")));
 }
 export async function logout() {
   const db = await supabase();
   await db.auth.signOut();
+  revalidatePath("/", "layout");
   redirect("/");
 }
 export async function createBusiness(form: FormData) {

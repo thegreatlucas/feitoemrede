@@ -1,3 +1,5 @@
+import { currentUser } from "@/lib/auth";
+import { logout } from "@/app/actions";
 import { Arrow, Burst } from "@/components/icons";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -7,9 +9,10 @@ export const metadata: Metadata = {
   description:
     "Encontre e fortaleça empreendedores da sua comunidade. Uma economia feita por gente, para gente.",
 };
-export default function Layout({
+export default async function Layout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const user = await currentUser();
   return (
     <html lang="pt-BR">
       <head>
@@ -37,15 +40,42 @@ export default function Layout({
           </Link>
           <nav>
             <Link href="/#explorar">Explorar negócios</Link>
-            <Link href="/painel">Meu negócio</Link>
+            <Link href="/talentos">Talentos</Link>
+            <Link href="/vagas">Vagas</Link>
+            <Link href="/denuncias">Direitos</Link>
+            <Link href={user ? "/painel" : "/entrar"}>
+              {user ? "Meu negócio" : "Entrar"}
+            </Link>
             <Link href="/cadastro" className="button small">
-              Faça parte{" "}
+              Cadastrar negócio{" "}
               <span>
                 <Arrow />
               </span>
             </Link>
           </nav>
         </header>
+        <div className="mobile-nav">
+          <Link href="/#explorar">Negócios</Link>
+          <Link href="/talentos">Talentos</Link>
+          <Link href="/vagas">Vagas</Link>
+          <Link href="/denuncias">Direitos</Link>
+          <Link href={user ? "/talentos/meu-perfil" : "/entrar"}>
+            {user ? "Meu perfil" : "Entrar"}
+          </Link>
+        </div>
+        {user && (
+          <div className="session-bar" data-clarity-mask="true">
+            <span>
+              Você está logado como <strong>{user.email}</strong>
+            </span>
+            <div>
+              <Link href="/talentos/meu-perfil">Meu perfil profissional</Link>
+              <form action={logout}>
+                <button className="text-link">Sair</button>
+              </form>
+            </div>
+          </div>
+        )}
         {children}
         <footer>
           <Link href="/" className="footer-brand">
@@ -56,6 +86,9 @@ export default function Layout({
             <br />
             Sem vínculo institucional com partidos políticos.
           </p>
+          <Link href="/denuncias">
+            Direitos e denúncias <Arrow />
+          </Link>
           <Link href="/privacidade">
             Privacidade e participação <Arrow />
           </Link>

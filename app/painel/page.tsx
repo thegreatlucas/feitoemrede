@@ -60,6 +60,11 @@ export default async function Painel({
             </Link>
           </p>
           <p>
+            <Link className="button secondary" href="/painel/vagas">
+              Gerenciar vagas da empresa <Arrow />
+            </Link>
+          </p>
+          <p>
             Você também pode remover o negócio do catálogo. A remoção é
             permanente.
           </p>

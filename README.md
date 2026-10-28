@@ -11,7 +11,7 @@ Uma plataforma para aproximar consumidores de empreendedores e fortalecer uma ec
 - Moderação administrativa no dashboard Supabase, sem chave administrativa na aplicação.
 - Validação no servidor, proteção de ações do Next.js, políticas de acesso no banco (RLS) e cabeçalhos de segurança.
 
-Mapa, talentos/vagas, denúncias internas, recuperação de senha ainda não estão implementados. O catálogo usa paginação de 12 negócios por página; a busca por nome, descrição e cidade e o filtro por categoria são aplicados no banco a todos os cadastros aprovados. Não há dados fictícios exibidos como reais.
+Mapa e recebimento interno de denúncias, recuperação de senha ainda não estão implementados. O catálogo usa paginação de 12 negócios por página; a busca por nome, descrição e cidade e o filtro por categoria são aplicados no banco a todos os cadastros aprovados. Não há dados fictícios exibidos como reais.
 
 ## Desenvolvimento
 
@@ -82,3 +82,17 @@ O arquivo `vercel.json` fixa o framework Next.js, o comando `npm run build` e a 
 A migração `202610280004_business_images.sql` cria o bucket público `business-images`, as colunas de imagem e as regras de escrita por proprietário. Aplique depois das migrações 001, 002 e 003 em um projeto novo; não reaplique as já instaladas. Cada conta pode enviar logo e fachada em JPG, PNG ou WebP de até 1,5 MB e 16 megapixels por arquivo. O servidor valida os bytes, reduz dimensões, converte para WebP e remove metadados. SVG e animações são recusados. O limite do formulário é 4 MB, mantendo a soma dos dois arquivos abaixo do limite da Vercel.
 
 Os caminhos são gerados pelo servidor, vinculados ao UUID do proprietário e validados no banco. Apenas o proprietário autenticado pode gravar ou remover arquivos na própria pasta; a leitura das imagens é pública por consentimento. O painel permite substituir/remover fotos e editar os contatos. Não são usadas chaves administrativas no upload.
+
+## Banco de talentos
+
+`/talentos` apresenta o banco de recolocação. Visitantes veem apenas a apresentação; perfis, contatos e currículos exigem login. `/criar-conta` cria uma conta independente, sem obrigar o cadastro de um negócio. `/talentos/meu-perfil` permite criar/editar perfil, substituir o PDF, ocultar o perfil ou excluir perfil e currículo. O cabeçalho informa a conta autenticada e permite sair.
+
+Aplique `202610280005_talent_bank.sql` após as anteriores em projetos novos. Ela cria `talent_profiles` com RLS, permissões por proprietário e leitura apenas para usuários autenticados, além do bucket **privado** `talent-cvs`. Currículos aceitos: PDF válido, sem senha, até 2 MB e 20 páginas. O download passa por `/talentos/[id]/curriculo`, verifica sessão e RLS em cada solicitação e retorna anexo com `Cache-Control: private, no-store`. Não são gerados links públicos ou URLs assinadas de currículo.
+
+Filtros: texto (nome, cargo, cidade, região, habilidades), área, UF e modalidade (presencial, híbrido, remoto), com paginação. O perfil informa nome, título profissional, experiência, habilidades, cidade/UF, região de interesse, modalidades aceitas, e-mail profissional, telefone/WhatsApp e links de LinkedIn/portfólio. Não são coletados apoio político ou motivo de demissão. Páginas de talentos não são indexáveis e os seus conteúdos estão marcados para mascaramento no Clarity. Contatos dos negócios continuam públicos por consentimento; os dados profissionais seguem a política de acesso autenticado.
+
+## Vagas e orientação trabalhista
+
+`/vagas` oferece anúncios públicos das empresas publicadas, com filtros por texto, área, UF e modalidade. `/painel/vagas` permite anunciar, editar, encerrar e remover vagas da própria empresa. Os anúncios incluem cargo, atividades/requisitos, contratação, remuneração opcional, cidade/UF, modalidade, prazo e e-mail ou link de candidatura. A candidatura acontece diretamente no canal da empresa; a plataforma não envia o currículo automaticamente. Vagas encerradas, vencidas ou de empresas retiradas do catálogo não aparecem ao público. A migração `202610280006_job_posts.sql` aplica propriedade, RLS e expiração com data de São Paulo.
+
+`/denuncias` reúne canais oficiais do MPT, do MTE/gov.br e orientação pelo 158, além de informações gerais sobre preservação lícita de provas e procura de sindicato ou assistência jurídica. A página não recebe nem publica relatos ou arquivos. O enquadramento jurídico depende da situação concreta; não é afirmado que cada caso já teve sua ilegalidade reconhecida. O acesso externo aos órgãos pode depender de identificação e requisitos do próprio serviço.

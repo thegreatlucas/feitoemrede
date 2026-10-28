@@ -24,4 +24,12 @@ export async function proxy(request: NextRequest) {
   await db.auth.getUser();
   return response;
 }
-export const config = { matcher: ["/painel/:path*", "/cadastro", "/entrar"] };
+export const config = {
+  matcher: [
+    "/painel/:path*",
+    "/cadastro",
+    "/entrar",
+    "/criar-conta",
+    "/talentos/:path*",
+  ],
+};

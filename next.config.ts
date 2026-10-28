@@ -21,6 +21,14 @@ const config: NextConfig = {
           },
         ],
       },
+      {
+        source: "/talentos/:path*",
+        headers: [
+          { key: "Cache-Control", value: "private, no-store, max-age=0" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+          { key: "Vary", value: "Cookie" },
+        ],
+      },
     ];
   },
 };

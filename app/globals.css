@@ -962,3 +962,220 @@ a:hover.text-link {
   font-size: 12px;
   padding: 10px;
 }
+.session-bar {
+  max-width: 1440px;
+  margin: auto;
+  padding: 14px 6%;
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  background: #eae4d6;
+  border-bottom: 1px solid var(--line);
+}
+.session-bar > div {
+  display: flex;
+  gap: 22px;
+  align-items: center;
+}
+.session-bar strong {
+  overflow-wrap: anywhere;
+}
+.session-bar form {
+  margin: 0;
+}
+.mobile-nav {
+  display: none;
+}
+.talent-directory {
+  max-width: 1440px;
+  margin: auto;
+  padding: 55px 6% 75px;
+}
+.talent-directory h1 {
+  font-size: clamp(30px, 4vw, 52px);
+  letter-spacing: -2px;
+  margin: 20px 0;
+}
+.talent-filters {
+  display: flex;
+  gap: 12px;
+  align-items: end;
+  margin: 30px 0;
+  flex-wrap: wrap;
+}
+.talent-filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 120px;
+  font-size: 12px;
+  font-weight: bold;
+}
+.talent-filters label:first-child {
+  flex: 2;
+  min-width: 220px;
+}
+.talent-filters input,
+.talent-filters select {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--line);
+  padding: 14px;
+  background: #fcfaf4;
+  font: inherit;
+  font-weight: normal;
+}
+.talent-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+.talent-card {
+  border: 1px solid var(--line);
+  padding: 25px;
+  background: #fcfaf4;
+  overflow-wrap: anywhere;
+}
+.talent-card h2 {
+  margin: 20px 0 10px;
+  font-size: 25px;
+}
+.talent-card h3 {
+  font-size: 16px;
+  line-height: 1.5;
+}
+.talent-card > p {
+  font-size: 13px;
+  line-height: 1.7;
+}
+.talent-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 18px 0;
+}
+.talent-tags span {
+  background: #eae4d6;
+  padding: 8px 11px;
+  font-size: 11px;
+  font-weight: bold;
+}
+.talent-profile-area {
+  margin-top: 32px;
+}
+.form-page h1.talent-name {
+  overflow-wrap: anywhere;
+}
+.talent-bio {
+  margin: 35px 0;
+  line-height: 1.8;
+}
+.talent-bio p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.work-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 25px;
+}
+.field-title {
+  font-size: 13px;
+  font-weight: bold;
+}
+.danger-section {
+  margin-top: 45px;
+  border-top: 1px solid var(--line);
+  padding-top: 22px;
+}
+.danger-section p {
+  line-height: 1.7;
+  font-size: 13px;
+}
+.notice .contact-links {
+  margin-bottom: 24px;
+}
+.notice .contact-links a {
+  border: 1px solid #aaa;
+  padding: 10px 15px;
+  font-size: 13px;
+}
+.talent-directory .section-top {
+  gap: 20px;
+}
+@media (max-width: 1000px) {
+  .talent-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 650px) {
+  .mobile-nav {
+    display: flex;
+    justify-content: space-around;
+    padding: 14px 6%;
+    border-bottom: 1px solid var(--line);
+    font-size: 12px;
+    font-weight: bold;
+  }
+  .session-bar {
+    align-items: start;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .talent-directory {
+    padding: 35px 6%;
+  }
+  .talent-cards {
+    grid-template-columns: 1fr;
+  }
+  .talent-directory .section-top > .button {
+    margin-top: 18px;
+  }
+  .work-options {
+    gap: 15px;
+  }
+  .session-bar > div {
+    flex-wrap: wrap;
+  }
+}
+.job-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 15px;
+  margin-top: 22px;
+}
+.job-controls .button {
+  padding: 10px 14px;
+  font-size: 12px;
+}
+.support-list {
+  padding-left: 22px;
+  line-height: 1.8;
+}
+.support-list li {
+  margin-bottom: 12px;
+}
+@media (min-width: 651px) and (max-width: 1050px) {
+  header {
+    flex-wrap: wrap;
+    justify-content: center;
+    height: auto;
+    min-height: 110px;
+    padding-top: 18px;
+    padding-bottom: 18px;
+    gap: 20px;
+  }
+  header nav {
+    gap: 20px;
+  }
+}
+@media (max-width: 650px) {
+  .mobile-nav {
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+}
