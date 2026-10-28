@@ -1,3 +1,4 @@
+import { pageMetadata, siteUrl } from "@/lib/metadata";
 import { currentUser } from "@/lib/auth";
 import { logout } from "@/app/actions";
 import { Arrow, Burst } from "@/components/icons";
@@ -5,9 +6,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import "./globals.css";
 export const metadata: Metadata = {
-  title: "Feito em Rede — Quem faz, fortalece.",
-  description:
-    "Encontre e fortaleça empreendedores da sua comunidade. Uma economia feita por gente, para gente.",
+  metadataBase: siteUrl,
+  ...pageMetadata(
+    "Feito em Rede — Quem faz, fortalece.",
+    "Encontre negócios, talentos e oportunidades. Uma economia feita por gente, para gente.",
+    "/",
+  ),
 };
 export default async function Layout({
   children,

@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/metadata";
 import { Arrow } from "@/components/icons";
 import Link from "next/link";
 import { requireUser } from "@/lib/auth";
@@ -43,3 +44,10 @@ export default async function NewJob() {
     </main>
   );
 }
+
+export const metadata = pageMetadata(
+  "Anunciar vaga",
+  "Cadastre uma oportunidade de trabalho na sua empresa.",
+  "/painel/vagas/nova",
+  true,
+);

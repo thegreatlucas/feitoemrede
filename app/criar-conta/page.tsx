@@ -1,11 +1,8 @@
+import { pageMetadata } from "@/lib/metadata";
 import { redirect } from "next/navigation";
 import { currentUser } from "@/lib/auth";
 import { safeReturnTo } from "@/lib/talent-schema";
 import { AccountForm } from "@/components/account-form";
-export const metadata = {
-  title: "Criar acesso — Feito em Rede",
-  robots: { index: false, follow: false },
-};
 export default async function CreateAccount({
   searchParams,
 }: {
@@ -29,3 +26,10 @@ export default async function CreateAccount({
     </main>
   );
 }
+
+export const metadata = pageMetadata(
+  "Criar acesso",
+  "Crie sua conta e participe da rede de talentos e oportunidades.",
+  "/criar-conta",
+  true,
+);

@@ -1,3 +1,5 @@
+import { cache } from "react";
+import { pageMetadata } from "@/lib/metadata";
 import { Arrow } from "@/components/icons";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -5,13 +7,7 @@ import { z } from "zod";
 import { supabase } from "@/lib/supabase/server";
 import { brazilToday, type JobPost } from "@/lib/job-schema";
 export const dynamic = "force-dynamic";
-export default async function JobDetail({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-  if (!z.uuid().safeParse(id).success) notFound();
+const publicJob = cache(async (id: string) => {
   const db = await supabase();
   const { data, error } = await db
     .from("job_posts")
@@ -21,6 +17,44 @@ export default async function JobDetail({
     .eq("is_active", true)
     .gte("expires_on", brazilToday())
     .maybeSingle();
+  return { data, error };
+});
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  if (!z.uuid().safeParse(id).success)
+    return pageMetadata(
+      "Vaga indisponível",
+      "Encontre oportunidades na rede.",
+      "/vagas",
+      true,
+    );
+  const { data } = await publicJob(id);
+  if (!data)
+    return pageMetadata(
+      "Vaga indisponível",
+      "Encontre oportunidades na rede.",
+      "/vagas",
+      true,
+    );
+  const job = data as unknown as JobPost;
+  return pageMetadata(
+    `${job.title} · ${job.businesses?.name || "Vagas"}`,
+    `${job.city} · ${job.state} · ${job.work_mode}. ${job.description.slice(0, 180)}`,
+    `/vagas/${id}`,
+  );
+}
+export default async function JobDetail({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  if (!z.uuid().safeParse(id).success) notFound();
+  const { data, error } = await publicJob(id);
   if (error)
     return (
       <main className="form-page">

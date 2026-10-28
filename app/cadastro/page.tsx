@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/metadata";
 import { Arrow } from "@/components/icons";
 import { createBusiness } from "@/app/actions";
 import { configured, supabase } from "@/lib/supabase/server";
@@ -76,3 +77,10 @@ export default async function Cadastro({
     </main>
   );
 }
+
+export const metadata = pageMetadata(
+  "Cadastre seu negócio",
+  "Faça parte da rede e apresente seu negócio à comunidade.",
+  "/cadastro",
+  false,
+);

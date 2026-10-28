@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/metadata";
 import { safeReturnTo } from "@/lib/talent-schema";
 import Link from "next/link";
 import { Arrow } from "@/components/icons";
@@ -59,3 +60,10 @@ export default async function Login({
     </main>
   );
 }
+
+export const metadata = pageMetadata(
+  "Entrar",
+  "Acesse sua conta para cuidar do seu negócio e encontrar talentos.",
+  "/entrar",
+  true,
+);

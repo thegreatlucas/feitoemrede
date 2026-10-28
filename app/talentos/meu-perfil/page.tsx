@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/metadata";
 import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { supabase } from "@/lib/supabase/server";
@@ -67,3 +68,10 @@ export default async function MyTalent({
     </main>
   );
 }
+
+export const metadata = pageMetadata(
+  "Meu perfil profissional",
+  "Cadastre e gerencie seu perfil profissional e currículo com acesso protegido.",
+  "/talentos/meu-perfil",
+  true,
+);

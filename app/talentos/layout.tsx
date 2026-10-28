@@ -1,8 +1,4 @@
-import type { Metadata } from "next";
-export const metadata: Metadata = {
-  title: "Banco de talentos — Feito em Rede",
-  robots: { index: false, follow: false },
-};
+import { pageMetadata } from "@/lib/metadata";
 export default function TalentLayout({
   children,
 }: {
@@ -10,3 +6,10 @@ export default function TalentLayout({
 }) {
   return <div data-clarity-mask="true">{children}</div>;
 }
+
+export const metadata = pageMetadata(
+  "Banco de talentos",
+  "Conecte profissionais e oportunidades. Perfis e currículos disponíveis somente após login.",
+  "/talentos",
+  true,
+);

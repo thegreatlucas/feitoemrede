@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/metadata";
 import { Arrow, Burst } from "@/components/icons";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -88,3 +89,10 @@ export default async function Painel({
     </main>
   );
 }
+
+export const metadata = pageMetadata(
+  "Meu negócio",
+  "Gerencie as informações do seu negócio na rede.",
+  "/painel",
+  true,
+);

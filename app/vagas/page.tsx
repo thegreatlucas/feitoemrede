@@ -1,10 +1,10 @@
+import { pageMetadata } from "@/lib/metadata";
 import { Arrow } from "@/components/icons";
 import Link from "next/link";
 import { configured, supabase } from "@/lib/supabase/server";
 import { talentAreas, workModes, states } from "@/lib/talent-schema";
 import { brazilToday, type JobPost } from "@/lib/job-schema";
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Vagas — Feito em Rede" };
 export default async function Jobs({
   searchParams,
 }: {
@@ -186,3 +186,10 @@ export default async function Jobs({
     </main>
   );
 }
+
+export const metadata = pageMetadata(
+  "Vagas",
+  "Encontre oportunidades de trabalho nas empresas da rede.",
+  "/vagas",
+  false,
+);

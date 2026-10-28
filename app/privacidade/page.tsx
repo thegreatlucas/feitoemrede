@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/metadata";
 export default function Privacidade() {
   return (
     <main className="form-page">
@@ -77,3 +78,10 @@ export default function Privacidade() {
     </main>
   );
 }
+
+export const metadata = pageMetadata(
+  "Privacidade e participação",
+  "Saiba como seus dados são tratados e conheça as regras de participação.",
+  "/privacidade",
+  false,
+);

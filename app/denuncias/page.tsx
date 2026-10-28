@@ -1,9 +1,5 @@
+import { pageMetadata } from "@/lib/metadata";
 import { Arrow } from "@/components/icons";
-export const metadata = {
-  title: "Orientação e denúncias trabalhistas — Feito em Rede",
-  description:
-    "Canais oficiais e orientações para situações de discriminação e violação de direitos no trabalho.",
-};
 export default function Reports() {
   return (
     <main className="form-page wide">
@@ -106,3 +102,10 @@ export default function Reports() {
     </main>
   );
 }
+
+export const metadata = pageMetadata(
+  "Direitos e denúncias trabalhistas",
+  "Conheça os canais oficiais do MPT e MTE para orientação e denúncias trabalhistas.",
+  "/denuncias",
+  false,
+);

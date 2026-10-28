@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/metadata";
 import { notFound } from "next/navigation";
 import { z } from "zod";
 import { requireUser } from "@/lib/auth";
@@ -35,3 +36,10 @@ export default async function EditJob({
     </main>
   );
 }
+
+export const metadata = pageMetadata(
+  "Editar vaga",
+  "Atualize sua oportunidade de trabalho.",
+  "/painel/vagas",
+  true,
+);
