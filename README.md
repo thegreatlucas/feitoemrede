@@ -73,3 +73,7 @@ Disponibilize o responsável pelo tratamento dos dados e um canal real para den�
 ## Compatibilidade com a chave anon
 
 A aplicação aceita `NEXT_PUBLIC_ANON` (configurada neste ambiente), `NEXT_PUBLIC_SUPABASE_ANON_KEY` ou `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, nessa ordem de prioridade. Basta preencher uma dessas chaves públicas, sempre do mesmo projeto de `NEXT_PUBLIC_SUPABASE_URL`. A seleção é compartilhada entre as páginas e a renovação de sessão. Na Vercel, configure também a variável escolhida e faça um novo build quando alterar variáveis públicas. `NEXT_SECRET_SERVICE_ROLE` não é usada pela aplicação.
+
+### Configuração de build da Vercel
+
+O arquivo `vercel.json` fixa o framework Next.js, o comando `npm run build` e a saída `.next`. Isso evita o erro “No Output Directory named public found” em projetos importados anteriormente como sites estáticos. No painel da Vercel, mantenha o diretório raiz na raiz do repositório e o preset Next.js; remova configurações antigas de saída `public`. Não use exportação estática: autenticação e ações de cadastro precisam do servidor Next.js.
