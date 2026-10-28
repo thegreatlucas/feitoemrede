@@ -77,3 +77,7 @@ A aplicação aceita `NEXT_PUBLIC_ANON` (configurada neste ambiente), `NEXT_PUBL
 ### Configuração de build da Vercel
 
 O arquivo `vercel.json` fixa o framework Next.js, o comando `npm run build` e a saída `.next`. Isso evita o erro “No Output Directory named public found” em projetos importados anteriormente como sites estáticos. No painel da Vercel, mantenha o diretório raiz na raiz do repositório e o preset Next.js; remova configurações antigas de saída `public`. Não use exportação estática: autenticação e ações de cadastro precisam do servidor Next.js.
+
+### Configuração pública incluída no deploy
+
+`vercel.json` fornece a URL e a chave **anon** deste projeto tanto ao build quanto às funções da Vercel. Esses identificadores são públicos por definição e não concedem acesso administrativo: a autorização continua nas políticas RLS do Supabase. Nenhuma chave `service_role` ou secret key deve ser adicionada a esse arquivo. Ao trocar de projeto, atualize as duas configurações (`env` e `build.env`) juntas. As credenciais pessoais e administrativas continuam fora do Git.

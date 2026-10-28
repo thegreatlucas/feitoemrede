@@ -2,5 +2,15 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
   "buildCommand": "npm run build",
-  "outputDirectory": ".next"
+  "outputDirectory": ".next",
+  "env": {
+    "NEXT_PUBLIC_SUPABASE_URL": "https://yjvsqzcvcwdzwurljady.supabase.co",
+    "NEXT_PUBLIC_ANON": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlqdnNxemN2Y3dkend1cmxqYWR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMxNzUyMzYsImV4cCI6MjEwODc1MTIzNn0.xa0oRJCgG5hfetMsBHwzs1lg8Ne8uDXE-WNPY2d4eOE"
+  },
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_SUPABASE_URL": "https://yjvsqzcvcwdzwurljady.supabase.co",
+      "NEXT_PUBLIC_ANON": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlqdnNxemN2Y3dkend1cmxqYWR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMxNzUyMzYsImV4cCI6MjEwODc1MTIzNn0.xa0oRJCgG5hfetMsBHwzs1lg8Ne8uDXE-WNPY2d4eOE"
+    }
+  }
 }
