@@ -1,3 +1,4 @@
+import { BusinessDescription } from "@/components/business-description";
 import { businessImageUrl } from "@/lib/image-url";
 import { contactLinks, type BusinessContacts } from "@/lib/contact-links";
 import { Arrow, Burst } from "@/components/icons";
@@ -17,7 +18,7 @@ export default async function Home({
     1,
     Math.min(1000000, Number.parseInt(String(params.page ?? "1"), 10) || 1),
   );
-  const pageSize = 12;
+  const pageSize = 9;
   let total = 0;
   let businesses: (BusinessContacts & {
     id: string;
@@ -210,7 +211,7 @@ export default async function Home({
                     {b.city} · {b.state}
                   </div>
                   <h3>{b.name}</h3>
-                  <p>{b.description}</p>
+                  <BusinessDescription text={b.description} />
                   <div className="contact-links">
                     {contactLinks(b).map((link) => (
                       <a
