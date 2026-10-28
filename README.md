@@ -5,7 +5,7 @@ Uma plataforma para aproximar consumidores de empreendedores e fortalecer uma ec
 ## O que está implementado
 
 - Catálogo de negócios aprovados, busca textual e filtro por categoria.
-- Conta por e-mail e senha com Supabase Auth, confirmação por e-mail e sessão SSR.
+- Login separado do cadastro, conta por e-mail e senha com Supabase Auth e sessão SSR, sem confirmação por e-mail.
 - Cadastro de um negócio por conta: nome, descrição, categoria, cidade, UF e site/rede social HTTPS opcional.
 - Consentimento de publicação, revisão antes de publicar e painel para acompanhar ou remover o negócio. Para corrigir os dados nesta versão, remova e cadastre novamente.
 - Moderação administrativa no dashboard Supabase, sem chave administrativa na aplicação.
@@ -40,18 +40,13 @@ Os testes executam validação dos campos e a migração SQL em PostgreSQL embar
 
 1. Crie um projeto Supabase. Em **SQL Editor**, execute o conteúdo de `supabase/migrations/202610280001_businesses.sql` uma única vez, com uma conta administrativa. A migração cria a tabela, índices, privilégios e RLS. Não reaplique a migração sobre uma tabela existente sem planejar uma migração incremental.
 2. Copie a **Project URL** e a **Publishable key** para `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. Essas duas informações são públicas por definição; a proteção dos registros depende de RLS. Nunca use uma chave `service_role` ou secret key na aplicação.
-3. Em **Authentication → Providers → Email**, mantenha a confirmação de e-mail ativada. Configure uma política de senhas de pelo menos 10 caracteres. A política SQL também impede o envio de negócios por usuários não confirmados.
-4. Em **Authentication → URL Configuration**, configure o Site URL para o domínio definitivo e adicione os endereços autorizados de desenvolvimento e produção. Não autorize curingas amplos para previews não confiáveis.
-5. Em **Authentication → Email Templates → Confirm signup**, use um link de confirmação SSR:
+3. Aplique também a nova migração `supabase/migrations/202610280002_signup_business.sql`. Ela bloqueia INSERT direto na tabela (inclusive autenticado) e cria um trigger do Auth que valida e registra a empresa com proprietário fixado pela identidade do usuário. Não reaplique a primeira migração.
+4. Em **Authentication → Sign In / Providers → Email**, **desative Confirm email**. Configure uma política de senhas de pelo menos 10 caracteres. Esse controle é do projeto remoto; não pode ser desligado apenas pelo código do site. Contas antigas ainda não confirmadas podem precisar ser confirmadas manualmente pelo operador após verificar a solicitação.
+5. O cadastro agora segue: dados da empresa → e-mail e senha → criação da conta e acesso automático ao painel. Os dados são enviados como rascunho do Auth; o banco cadastra a empresa automaticamente. A publicação no catálogo continua sujeita à moderação.
+6. Enquanto o projeto remoto ainda exigir confirmação, a aplicação não cria novas contas por esse fluxo e mostra uma mensagem temporária. Assim não deixa a pessoa presa a um link de confirmação.
+7. Faça um teste real com uma conta sua: cadastrar empresa e acesso → entrar automaticamente no painel → sair → entrar pelo login → aprovar pelo dashboard → verificar no catálogo → remover no painel. Não use contas ou e-mails de terceiros.
 
-```html
-<a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=signup"
-  >Confirmar minha conta</a
->
-```
-
-6. Configure um provedor SMTP para entrega de e-mails em produção, respeitando os limites e a proteção contra abuso do Supabase. Antes de abrir inscrições públicas, avalie CAPTCHA no Auth e regras de limite de requisições apropriadas ao tráfego.
-7. Reinicie o servidor após alterar variáveis e faça um teste real: criar conta → receber e-mail → confirmar → cadastrar negócio → conferir status **Em análise** no painel → aprovar no dashboard → verificar no catálogo → remover pelo painel e confirmar que desapareceu.
+A nova migração impede gravação direta na tabela; as APIs públicas de autenticação do Supabase continuam funcionando. Nenhum site pode impedir todas as requisições HTTP, pois o próprio formulário depende delas. Server Actions validam os dados no servidor e aplicam a proteção de origem do Next.js; o campo oculto do formulário descarta automações simples e não substitui CAPTCHA ou limites do provedor. Não é usada uma chave administrativa no navegador ou no fluxo de cadastro.
 
 ### Moderação
 

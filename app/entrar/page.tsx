@@ -1,4 +1,5 @@
-import { Arrow, Burst } from "@/components/icons";
+import Link from "next/link";
+import { Arrow } from "@/components/icons";
 import { authenticate } from "@/app/actions";
 export default async function Login({
   searchParams,
@@ -10,7 +11,7 @@ export default async function Login({
     <main className="form-page">
       <div className="eyebrow">SUA HISTÓRIA FAZ PARTE</div>
       <h1>ENTRE NA REDE.</h1>
-      <p>Crie sua conta ou entre para cuidar do seu negócio.</p>
+      <p>Entre para cuidar do seu negócio.</p>
       {message && (
         <div className="notice" role="status">
           {message}
@@ -41,13 +42,9 @@ export default async function Login({
         <button name="mode" value="signin" className="button">
           Entrar <Arrow />
         </button>
-        <button name="mode" value="signup" className="button secondary">
-          Criar minha conta <Arrow />
-        </button>
         <p className="muted">
-          Ao criar uma conta, você concorda com os{" "}
-          <a href="/privacidade">termos de participação e privacidade</a>.
-          Confirme seu endereço pelo e-mail enviado.
+          Ainda não faz parte?{" "}
+          <Link href="/cadastro">Cadastre sua empresa e crie sua conta.</Link>
         </p>
       </form>
     </main>

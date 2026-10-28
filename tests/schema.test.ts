@@ -36,3 +36,20 @@ test("allows an omitted public contact", () =>
     businessSchema.safeParse({ ...valid, website: "" }).success,
     true,
   ));
+
+test("signup requires valid business data and matching passwords", async () => {
+  const { signupSchema } = await import("../lib/schema");
+  const signup = {
+    ...valid,
+    email: "pessoa@example.com",
+    password: "senha-longa-123",
+    passwordConfirmation: "senha-longa-123",
+  };
+  assert.equal(signupSchema.safeParse(signup).success, true);
+  assert.equal(
+    signupSchema.safeParse({ ...signup, passwordConfirmation: "outra-senha" })
+      .success,
+    false,
+  );
+  assert.equal(signupSchema.safeParse({ ...signup, name: "" }).success, false);
+});

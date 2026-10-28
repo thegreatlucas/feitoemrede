@@ -837,3 +837,65 @@ a:hover.text-link {
 .pagination .button {
   padding: 12px;
 }
+.form-stack fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 23px;
+}
+.form-stack fieldset[hidden] {
+  display: none;
+}
+.form-stack legend {
+  font-weight: 800;
+  font-size: 22px;
+  margin-bottom: 24px;
+}
+.signup-progress {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  gap: 20px;
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 32px 0;
+  border-bottom: 1px solid var(--line);
+}
+.signup-progress li {
+  padding: 12px 0;
+  color: #66675e;
+}
+.signup-progress li[aria-current="step"] {
+  color: var(--red);
+  border-bottom: 3px solid var(--red);
+  font-weight: bold;
+}
+.signup-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+  transform: none;
+}
+.honeypot {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+@media (max-width: 650px) {
+  .signup-progress {
+    gap: 12px;
+    font-size: 10px;
+  }
+  .signup-buttons {
+    flex-direction: column;
+  }
+}
