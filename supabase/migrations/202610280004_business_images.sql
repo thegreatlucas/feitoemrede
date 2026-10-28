@@ -30,4 +30,3 @@ begin
 end;
 $$;
 revoke all on function public.register_business_from_auth() from public,anon,authenticated;
-
