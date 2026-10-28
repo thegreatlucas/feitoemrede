@@ -397,12 +397,18 @@ p {
 }
 .card-art > small {
   position: absolute;
+  z-index: 1;
   left: 15px;
   top: 15px;
-  background: var(--paper);
-  padding: 7px 10px;
-  font-size: 10px;
-  font-weight: bold;
+  max-width: calc(100% - 30px);
+  background: #faf8f2;
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  padding: 8px 11px;
+  font-size: 13px;
+  line-height: 1.4;
+  font-weight: 700;
+  overflow-wrap: anywhere;
 }
 .art-1 {
   background: var(--red);
